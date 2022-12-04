@@ -1,19 +1,27 @@
 import { Pressable, Text, useWindowDimensions } from "react-native"
 import React from "react"
-import { TabBar, TabView } from "react-native-tab-view"
+import { SceneRendererProps, TabBar, TabView } from "react-native-tab-view"
 import TodoDetails from "./TodoDetails"
 import moment from "moment"
+import { GetDates, StorageTodo } from "../App"
+import { Todo } from "./CreateModal"
 
-const Tabs = ({ routes, todos }: any) => {
+interface IProps {
+  routes: GetDates[]
+  todos: StorageTodo[]
+}
+
+const Tabs: React.FC<IProps> = ({ routes, todos }) => {
   const [index, setIndex] = React.useState(0)
 
   const layout = useWindowDimensions()
 
   const renderScene = ({ route }: any) => {
-    let todoData: any[] = []
-    todos.filter((todo: any) => {
+    let todoData: string = ""
+    todos.filter((todo) => {
       if (todo[0] === route.key) todoData = todo[1]
     })
+    console.log(todos)
     if (todoData.length > 0) return <TodoDetails todoData={todoData} />
   }
 

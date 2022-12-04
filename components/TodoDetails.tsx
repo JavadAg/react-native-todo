@@ -12,11 +12,20 @@ import SwipeableItem, {
   useSwipeableItemParams
 } from "react-native-swipeable-item"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import { Todo } from "./CreateModal"
 
-const TodoDetails = ({ todoData }: any) => {
-  const [parsedData, setParsedData] = useState(JSON.parse(todoData))
+interface IProps {
+  todoData: string
+}
 
-  const renderItemList: ListRenderItem<any> = useCallback(({ item }) => {
+interface Swipe {
+  item: Todo
+}
+
+const TodoDetails: React.FC<IProps> = ({ todoData }) => {
+  const [parsedData, setParsedData] = useState<Todo[]>(JSON.parse(todoData))
+
+  const renderItemList: ListRenderItem<Todo> = useCallback(({ item }) => {
     return (
       <SwipeableItem
         key={item.key}
@@ -47,15 +56,13 @@ const TodoDetails = ({ todoData }: any) => {
     )
   }, [])
 
-  const UnderlayLeft = ({ item }: any) => {
+  const UnderlayLeft = ({ item }: Swipe) => {
     const deleteTodo = async () => {
       const selectedDate = moment(item.date).format("YYYY-MM-DD")
       const todos = await AsyncStorage.getItem(selectedDate)
-      const parsedTodo = JSON.parse(todos!)
+      const parsedTodo: Todo[] = JSON.parse(todos!)
 
-      const filteredData = parsedTodo.filter(
-        (todo: any) => todo.key !== item.key
-      )
+      const filteredData = parsedTodo.filter((todo) => todo.key !== item.key)
       const stringifiedData = JSON.stringify(filteredData)
       await AsyncStorage.setItem(selectedDate, stringifiedData)
       setParsedData(filteredData)
@@ -74,11 +81,11 @@ const TodoDetails = ({ todoData }: any) => {
     )
   }
 
-  const UnderlayRight = ({ item }: any) => {
+  const UnderlayRight = ({ item }: Swipe) => {
     const handleStatus = async () => {
       const selectedDate = moment(item.date).format("YYYY-MM-DD")
       const todos = await AsyncStorage.getItem(selectedDate)
-      const parsedTodo = JSON.parse(todos!)
+      const parsedTodo: Todo[] = JSON.parse(todos!)
 
       for (const obj of parsedTodo) {
         if (obj.key === item.key) {
@@ -118,9 +125,10 @@ const TodoDetails = ({ todoData }: any) => {
       <FlatList
         className="w-full mb-24 bg-gray-900 rounded-2xl"
         data={parsedData.sort(
-          (a: any, b: any) => new Date(a.date) - new Date(b.date)
+          (a: Todo, b: Todo) =>
+            (new Date(a.date!) as any) - (new Date(b.date!) as any)
         )}
-        keyExtractor={(item) => item.key}
+        keyExtractor={(item) => item.key!}
         renderItem={renderItemList}
       />
     </View>

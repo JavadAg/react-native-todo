@@ -3,29 +3,37 @@ import React, { useEffect, useState } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { KeyValuePair } from "@react-native-async-storage/async-storage/lib/typescript/types"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
-import CreateModal from "./components/CreateModal"
+import CreateModal, { Todo } from "./components/CreateModal"
 import Tabs from "./components/Tabs"
 
+export interface GetDates {
+  key: string
+  title: string
+}
+
+export interface StorageTodo {
+  0: string
+  1: string
+}
+
 export default function App() {
-  const [todos, setTodos] = useState<readonly KeyValuePair[]>([])
+  const [todos, setTodos] = useState<StorageTodo[]>([])
   const [loading, setLoading] = useState(false)
-  const [routes, setRoutes] = React.useState([])
+  const [routes, setRoutes] = useState<GetDates[]>([])
   useEffect(() => {
     getTodos()
   }, [])
 
   const getTodos = async () => {
-    /*  await AsyncStorage.clear() */
+    /* await AsyncStorage.clear() */
     setLoading(true)
     let keys = await AsyncStorage.getAllKeys()
     const fetchedTodos = await AsyncStorage.multiGet(keys)
-
-    setTodos(fetchedTodos)
-    let getDays: any = []
+    setTodos(fetchedTodos as unknown as StorageTodo[])
+    let getDays: GetDates[] = []
     fetchedTodos.map(
       (todo) => (getDays = [...getDays, { key: todo[0], title: todo[0] }])
     )
-
     setRoutes(getDays)
     setLoading(false)
   }
@@ -46,7 +54,9 @@ export default function App() {
               {todos.length > 0 ? (
                 <Tabs routes={routes} todos={todos} />
               ) : (
-                <Text className="text-white">No Todo here</Text>
+                <Text className="text-xl text-center text-white">
+                  No Todo here , Create one
+                </Text>
               )}
             </View>
           )}

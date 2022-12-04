@@ -17,7 +17,7 @@ import {
 } from "@react-native-community/datetimepicker"
 import moment from "moment"
 
-interface Todo {
+export interface Todo {
   key?: string
   name?: string
   description?: string

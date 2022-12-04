@@ -21,7 +21,7 @@ const Tabs: React.FC<IProps> = ({ routes, todos }) => {
     todos.filter((todo) => {
       if (todo[0] === route.key) todoData = todo[1]
     })
-    console.log(todos)
+
     if (todoData.length > 0) return <TodoDetails todoData={todoData} />
   }
 
